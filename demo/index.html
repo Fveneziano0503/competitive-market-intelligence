@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MarketSignal — Intelligence Demo</title><style>body{margin:0;background:#09141e;color:#edf5fa;font:16px Arial}header{padding:28px 6%;border-bottom:1px solid #2b4353;display:flex;justify-content:space-between}main{max-width:1150px;margin:35px auto;padding:20px}h1{color:#59dfcb}section{background:#102735;border:1px solid #284552;padding:24px;margin:20px 0;border-radius:14px}textarea,input,select{background:#081923;color:#eaf2f6;border:1px solid #406373;padding:12px;border-radius:8px}textarea{width:100%;height:240px;box-sizing:border-box}button{background:#59dfcb;color:#09232d;border:0;padding:13px 20px;margin:12px 10px 12px 0;border-radius:8px;cursor:pointer}table{border-collapse:collapse;width:100%}td,th{padding:13px;text-align:left;border-bottom:1px solid #2b4454}pre{white-space:pre-wrap;line-height:1.6}.note{color:#b1c6d0;line-height:1.6}.wrap{overflow-x:auto}.flag{color:#efce82}</style></head><body><header><b>MarketSignal</b><span>PROJECT 05 · LOCAL DEMO</span></header><main><h1>See changes. Review evidence. Decide what matters.</h1><p class="note">Synthetic observations, not live prices or market advice. Paste your own comparable observations to review changes locally.</p><section><h2>1. Observation intake</h2><textarea id="input" aria-label="Observation JSON">[
+  {
+    "name": "Example Rival A \u00b7 service price",
+    "category": "Competitor",
+    "previous": 120,
+    "current": 132,
+    "unit": "USD/service",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  },
+  {
+    "name": "Example local technician pay",
+    "category": "Labor",
+    "previous": 28,
+    "current": 30,
+    "unit": "USD/hour",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  },
+  {
+    "name": "Example aluminum purchase cost",
+    "category": "Materials",
+    "previous": 2.4,
+    "current": 2.28,
+    "unit": "USD/lb",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  },
+  {
+    "name": "Example silver purchase cost",
+    "category": "Precious metals",
+    "previous": 30,
+    "current": 33,
+    "unit": "USD/oz",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  }
+]</textarea><label>Alert threshold % <input id="threshold" type="number" value="5" min="0" step="0.1"></label><button id="review">Review observations</button><p id="error" role="status"></p></section><section><h2>2. Signals</h2><label>Category <select id="category"><option>All</option></select></label><div class="wrap"><table><thead><tr><th>Observation</th><th>Category</th><th>Previous</th><th>Current</th><th>Change</th><th>Flag</th></tr></thead><tbody id="rows"></tbody></table></div><p class="note">Each pair must use the same unit, specification, location, and commercial terms. A threshold crossing is a review flag, not a recommendation.</p></section><section><h2>3. Review brief</h2><pre id="brief"></pre><button id="export">Export filtered CSV</button><p id="status" role="status"></p></section><p class="note">No scraping, API connections, scheduled monitoring, email delivery, or AI calls. All processing stays in this browser; reload resets edits.</p></main><script src="../src/intelligence.js"></script><script>
+const get=id=>document.getElementById(id);let rows=null;function render(){const selected=get('category').value;const filtered=rows.filter(r=>selected==='All'||r.category===selected);get('rows').replaceChildren();for(const r of filtered){const tr=document.createElement('tr');for(const value of [r.name,r.category,r.previous+' '+r.unit,r.current+' '+r.unit,r.changePct.toFixed(1)+'%',r.alert?'Review':'Within threshold']){const td=document.createElement('td');td.textContent=value;tr.appendChild(td);}get('rows').appendChild(tr);}get('brief').textContent=brief(filtered);return filtered;}
+function clear(){rows=null;get('rows').replaceChildren();get('brief').textContent='';get('status').textContent='Input changed. Review again before export.';}
+get('review').onclick=()=>{try{rows=analyze(JSON.parse(get('input').value),Number(get('threshold').value));get('category').replaceChildren();for(const c of ['All',...new Set(rows.map(r=>r.category))]){const o=document.createElement('option');o.textContent=c;get('category').appendChild(o);}get('error').textContent='Reviewed '+rows.length+' observations.';render();get('status').textContent='';}catch(e){clear();get('error').textContent=e.message;}};get('category').onchange=()=>{if(rows)render();};get('input').oninput=clear;get('threshold').oninput=clear;
+get('export').onclick=()=>{if(!rows){get('status').textContent='Review valid observations first.';return;}const cols=['name','category','previous','current','unit','changePct','source','observedAt'];const selected=render();const text=[cols.map(csvCell).join(','),...selected.map(r=>cols.map(k=>csvCell(r[k])).join(','))].join('\r\n');const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='marketsignal-observations.csv';a.click();URL.revokeObjectURL(url);get('status').textContent='Filtered observations exported locally.';};get('review').click();
+</script></body></html>

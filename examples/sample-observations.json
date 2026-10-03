@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Example Rival A \u00b7 service price",
+    "category": "Competitor",
+    "previous": 120,
+    "current": 132,
+    "unit": "USD/service",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  },
+  {
+    "name": "Example local technician pay",
+    "category": "Labor",
+    "previous": 28,
+    "current": 30,
+    "unit": "USD/hour",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  },
+  {
+    "name": "Example aluminum purchase cost",
+    "category": "Materials",
+    "previous": 2.4,
+    "current": 2.28,
+    "unit": "USD/lb",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  },
+  {
+    "name": "Example silver purchase cost",
+    "category": "Precious metals",
+    "previous": 30,
+    "current": 33,
+    "unit": "USD/oz",
+    "source": "Synthetic example",
+    "observedAt": "2026-10-03"
+  }
+]
